@@ -14,6 +14,7 @@ const vars = {
   GUIDE_PAY_URL: cfg.products.guide.link,
   KIT_PAY_URL: cfg.products.kit.link,
   TEAM_PAY_URL: cfg.products.team.link,
+  HOOKS_PAY_URL: cfg.products.hooks.link,
 };
 
 function render(text, extra = {}) {
