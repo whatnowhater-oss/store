@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Codebase X-ray logo">
+  <rect width="64" height="64" rx="14" fill="#0f1c2c"/>
+  <g stroke="#4f82cc" stroke-width="2.4" stroke-linecap="round">
+    <line x1="32" y1="32" x2="15" y2="16"/><line x1="32" y1="32" x2="49" y2="14"/>
+    <line x1="32" y1="32" x2="53" y2="38"/><line x1="32" y1="32" x2="38" y2="53"/>
+    <line x1="32" y1="32" x2="13" y2="46"/><line x1="15" y1="16" x2="31" y2="11"/>
+    <line x1="53" y1="38" x2="38" y2="53"/>
+  </g>
+  <g fill="#cfe0ff"><circle cx="15" cy="16" r="4.2"/><circle cx="49" cy="14" r="4.2"/><circle cx="53" cy="38" r="4.2"/><circle cx="38" cy="53" r="4.2"/><circle cx="13" cy="46" r="4.2"/><circle cx="31" cy="11" r="4.2"/></g>
+  <circle cx="32" cy="32" r="8.5" fill="#6ea0ff"/>
+</svg>

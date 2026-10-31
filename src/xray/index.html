@@ -117,13 +117,18 @@ code, .mono { font-family: var(--mono); font-size: 0.92em; }
 }
 .more ul { margin: 0; padding-left: 1.2em; display: grid; gap: 4px; }
 .more { display: grid; gap: 8px; }
+
+.brand { display: inline-flex; align-items: center; gap: 10px; color: var(--ink); text-decoration: none; }
+.brand img { width: 32px; height: 32px; border-radius: 8px; flex: none; }
+@media (max-width: 760px) { .brand span { display: none; } }
 </style>
+<link rel="icon" href="../logo.svg" type="image/svg+xml">
 </head>
 <body>
 
 <div class="wrap">
   <header class="top">
-    <div class="brand">Codebase X-ray <span>maps + guides for real code</span></div>
+    <a class="brand" href="../"><img src="../logo.svg" alt="">Codebase X-ray <span>maps + guides for real code</span></a>
     <a href="#order">Order a report</a>
   </header>
 

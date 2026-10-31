@@ -24,6 +24,8 @@ function render(text, extra = {}) {
     text = text.replace(/<a [^>]*href="mailto:%%CONTACT_EMAIL%%"[^>]*>%%CONTACT_EMAIL%%<\/a>/g, 'reply to your Stripe receipt email');
     all.CONTACT_EMAIL = 'us by replying to your Stripe receipt';
   }
+  // Hide the Repo Safety Hooks section until its checkout is switched on.
+  if (!cfg.products.hooks || !cfg.products.hooks.link) text = text.replace(/\n  <section id="hooks">[\s\S]*?<\/section>/, '');
   return text.replace(/%%([A-Z_]+)%%/g, (m, k) => (k in all ? all[k] : m));
 }
 
@@ -47,6 +49,7 @@ for (const rel of ['index.html', 'kit/index.html', 'xray/index.html', 'xray/than
 }
 
 fs.copyFileSync(path.join(root, 'static/base.css'), path.join(out, 'base.css'));
+fs.copyFileSync(path.join(root, 'static/logo.svg'), path.join(out, 'logo.svg'));
 copyDir(path.join(root, 'static/xray-samples'), path.join(out, 'xray/samples'));
 
 // Kit downloads are hosted privately (Google Drive) and linked from the Stripe confirmation page, never in this public repo.
