@@ -219,9 +219,9 @@ code, .mono { font-family: var(--mono); font-size: 0.92em; }
     <p class="label">How it works</p>
     <h2>From checkout to report in two days</h2>
     <ol class="steps">
-      <li><span class="when">Today</span><div><h3>Pay and tell us which repo</h3><p>Paste a public GitHub link at checkout. For a private repo, share a zip of the code by Google Drive link instead.</p></div></li>
-      <li><span class="when">Hour 0 to 1</span><div><h3>We confirm by email</h3><p>You get a confirmation with your order number and the delivery time.</p></div></li>
-      <li><span class="when">Within 48 h</span><div><h3>Your report arrives</h3><p>The map, the guide and the risk list, as files you keep. Ask up to two follow-up questions by email and we update the guide.</p></div></li>
+      <li><span class="when">Today</span><div><h3>Pay and tell us which repo</h3><p>Paste the link to a public GitHub repository at checkout. Private repositories aren't supported yet.</p></div></li>
+      <li><span class="when">Hour 0 to 1</span><div><h3>We confirm by email</h3><p>We email the address you used at checkout with your delivery time.</p></div></li>
+      <li><span class="when">Within 48 h</span><div><h3>Your report arrives</h3><p>The map, the guide and the risk list, as files you keep. Reply to the delivery email with up to two follow-up questions and we update the guide.</p></div></li>
       <li><span class="when">Day 7</span><div><h3>We delete your code</h3><p>Your source and our working copies are deleted 7 days after delivery. The report stays yours.</p></div></li>
     </ol>
   </section>
@@ -232,9 +232,9 @@ code, .mono { font-family: var(--mono); font-size: 0.92em; }
     <div class="faq">
       <details><summary>How is the report made?</summary><p>The map comes from automated parsing of your source code, which reads structure directly and does not guess. The guide is written by an AI model working from that map and the code itself. We tell you this up front because it is why the price is $199 and not a consultant's day rate.</p></details>
       <details><summary>Which languages work?</summary><p>About 40, including Python, JavaScript, TypeScript, Go, Rust, Java, C#, C, C++, Ruby, PHP and Swift. Mixed-language repos are fine.</p></details>
-      <details><summary>How big a repository?</summary><p>$199 covers up to about 150,000 lines of code. For larger repos or monorepos, email us before ordering for a quote.</p></details>
+      <details><summary>How big a repository?</summary><p>$199 covers up to about 150,000 lines of code. If yours is bigger, we email you after checkout and you choose: a report on the main source folder, or a full refund.</p></details>
       <details><summary>Is my code safe?</summary><p>Your code is used only to make your report and is deleted 7 days after delivery. It is never published, shared, or used to train models.</p></details>
-      <details><summary>What if it isn't useful?</summary><p>Email us within 7 days of delivery and we refund you in full.</p></details>
+      <details><summary>What if it isn't useful?</summary><p>Reply to the delivery email within 7 days and we refund you in full.</p></details>
     </div>
   </section>
 
@@ -248,7 +248,6 @@ code, .mono { font-family: var(--mono); font-size: 0.92em; }
   </section>
 
   <footer>
-    <p>Questions: <a class="mono" id="contact" href="mailto:%%CONTACT_EMAIL%%">%%CONTACT_EMAIL%%</a></p>
     <p>Maps are built with graphify (Apache-2.0, Graphify Labs). Codebase X-ray is an independent service and is not affiliated with Graphify Labs.</p>
   </footer>
 </div>
