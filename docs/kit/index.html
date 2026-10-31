@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Agent-Ready Repo Kit</title>
+<meta name="description" content="Tested AGENTS.md / CLAUDE.md templates, 8 slash commands and safety hooks that stop AI coding agents guessing commands, breaking tests and touching files they shouldn't.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="../base.css">
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="brand">Agent-Ready Repo Kit <span>setup for AI coding agents</span></div>
+    <a href="#buy">Buy the kit</a>
+  </header>
+
+  <section>
+    <p class="label">For developers using Claude Code, Codex or Cursor</p>
+    <h1>Make AI coding agents follow your codebase's rules.</h1>
+    <p class="lede">Agents are fast until they run the wrong test command, "fix" a test by deleting the assertion, or edit a lockfile. Almost every one of those mistakes comes from missing setup, not a weak model. This kit is that setup, ready to copy into your repo in about 20 minutes.</p>
+    <div class="buy">
+      <a class="btn" href="#buy">See the options</a>
+      <span class="price"><b>$49</b> one person, unlimited repos</span>
+    </div>
+  </section>
+
+  <section>
+    <p class="label">What's inside</p>
+    <h2>Everything an agent needs to get it right</h2>
+    <div class="cols">
+      <div><h3>Templates for 6 stacks</h3><p>Next.js, Python/FastAPI, Django, Go, Rails and a generic one. Exact commands, a do-not-touch list, a definition of done and an ask-first list.</p></div>
+      <div><h3>8 slash commands</h3><p>/plan, /review, /fix-tests, /write-tests, /debug, /refactor, /explain and /ship.</p></div>
+      <div><h3>Enforced guardrails</h3><p>A permissions file and two tested hooks that block force pushes, hard resets, piped installs, destructive SQL and edits to secrets, lockfiles and generated code.</p></div>
+    </div>
+    <p>Plus a short setup guide and a 10-minute smoke test so you know it works. Works with Claude Code out of the box; the AGENTS.md templates and commands also work with Codex, Cursor and other agents that read AGENTS.md.</p>
+  </section>
+
+  <section id="buy">
+    <p class="label">Buy</p>
+    <h2>Pick one</h2>
+    <div class="cards">
+      <div class="card">
+        <h3>The Guide</h3>
+        <span class="price"><b>$19</b></span>
+        <ul><li>The 5-chapter setup guide on its own</li><li>Upgrade to the kit any time</li></ul>
+        <a class="btn pay" data-url="" href="#buy">Buy the guide</a>
+      </div>
+      <div class="card featured">
+        <h3>The Kit</h3>
+        <span class="price"><b>$49</b></span>
+        <ul><li>Templates, commands, hooks and guide</li><li>One person, unlimited repos</li><li>Free updates</li></ul>
+        <a class="btn pay" data-url="" href="#buy">Buy the kit</a>
+      </div>
+      <div class="card">
+        <h3>Team license</h3>
+        <span class="price"><b>$149</b></span>
+        <ul><li>The kit for every engineer at one company</li><li>4-week rollout plan</li><li>Checklist for reviewing agent-written PRs</li></ul>
+        <a class="btn pay" data-url="" href="#buy">Buy for the team</a>
+      </div>
+    </div>
+    <p class="note mono" id="buy-note" hidden>Checkout opens shortly. Please check back soon.</p>
+    <p>You download a zip of Markdown, JSON and shell files right after checkout. No account, no subscription. If the kit doesn't help your setup, email within 14 days for a full refund.</p>
+  </section>
+
+  <footer>
+    <p>Questions: reply to your Stripe receipt email</p>
+    <p>Not affiliated with Anthropic, OpenAI or Cursor.</p>
+  </footer>
+</div>
+<script>
+  for (const a of document.querySelectorAll(".pay")) {
+    const url = a.dataset.url;
+    if (url && url.startsWith("https://")) { a.href = url; a.rel = "noopener"; }
+    else a.addEventListener("click", () => { document.getElementById("buy-note").hidden = false; });
+  }
+</script>
+</body>
+</html>

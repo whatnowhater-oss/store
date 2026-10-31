@@ -1,0 +1,146 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Flask X-ray guide</title>
+<style>:root{--bg:#fff;--fg:#142233;--muted:#566476;--line:#d3dbe5;--code:#eef2f6}
+@media (prefers-color-scheme:dark){:root{--bg:#111c29;--fg:#e3ebf5;--muted:#9aa9bb;--line:#243447;--code:#0b131d;color-scheme:dark}}
+body{background:var(--bg);color:var(--fg);font:16px/1.6 "IBM Plex Sans",system-ui,sans-serif;max-width:760px;margin:0 auto;padding:32px max(16px,env(safe-area-inset-left,0px))}
+table{border-collapse:collapse;display:block;overflow-x:auto}td,th{border:1px solid var(--line);padding:6px 10px;text-align:left;vertical-align:top}
+code{background:var(--code);padding:1px 4px;border-radius:3px;font-size:.9em}a{color:#3b78e7}</style></head><body>
+<p><a href="../../index.html">&larr; Codebase X-ray</a> &middot; <a href="graph.html">Open the interactive map</a></p>
+<h1>Codebase X-ray: Flask</h1>
+<p>Sample report. Source: <a href="https://github.com/pallets/flask">pallets/flask</a> at commit <code>49943b5</code> (version 3.2.0.dev), mapped 2026-10-30.
+Files in this pack: <code>graph.html</code> (open in a browser, click any node), <code>GRAPH_REPORT.md</code> (raw graph stats), and this guide.</p>
+<h2>The one-minute version</h2>
+<p>Flask is about 9,600 lines of Python in 25 files. Almost everything flows through four things: the <code>Flask</code> app object, the <code>AppContext</code> that wraps each request, the <code>Scaffold</code> base class that gives apps and blueprints their decorators, and the <code>Request</code>/<code>Response</code> wrappers around Werkzeug. If you read <code>app.py</code>, <code>ctx.py</code> and <code>sansio/scaffold.py</code> in that order, you understand most of the framework.</p>
+<h2>Map of the code</h2>
+<table>
+<thead>
+<tr>
+<th>Area</th>
+<th>Files</th>
+<th>Lines</th>
+<th>What lives there</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>App core</td>
+<td><code>app.py</code>, <code>sansio/app.py</code></td>
+<td>2,700</td>
+<td>The <code>Flask</code> class and its I/O-free base <code>App</code>: routing, dispatch, error handling</td>
+</tr>
+<tr>
+<td>Shared base</td>
+<td><code>sansio/scaffold.py</code></td>
+<td>800</td>
+<td><code>Scaffold</code>: <code>route</code>, <code>before_request</code>, <code>errorhandler</code> and friends, used by apps and blueprints</td>
+</tr>
+<tr>
+<td>Blueprints</td>
+<td><code>blueprints.py</code>, <code>sansio/blueprints.py</code></td>
+<td>820</td>
+<td>Reusable groups of routes that register onto an app later</td>
+</tr>
+<tr>
+<td>Contexts and globals</td>
+<td><code>ctx.py</code>, <code>globals.py</code></td>
+<td>620</td>
+<td><code>AppContext</code>, <code>g</code>, <code>request</code>, <code>session</code>, <code>current_app</code></td>
+</tr>
+<tr>
+<td>HTTP wrappers</td>
+<td><code>wrappers.py</code></td>
+<td>255</td>
+<td><code>Request</code> and <code>Response</code>, subclasses of Werkzeug's</td>
+</tr>
+<tr>
+<td>Sessions</td>
+<td><code>sessions.py</code></td>
+<td>385</td>
+<td>Signed-cookie sessions and the interface to replace them</td>
+</tr>
+<tr>
+<td>CLI</td>
+<td><code>cli.py</code></td>
+<td>1,126</td>
+<td>The <code>flask</code> command, app discovery, <code>flask run</code></td>
+</tr>
+<tr>
+<td>Supporting</td>
+<td><code>config.py</code>, <code>helpers.py</code>, <code>templating.py</code>, <code>json/</code>, <code>testing.py</code>, <code>views.py</code>, <code>logging.py</code></td>
+<td>2,500</td>
+<td>Config loading, <code>url_for</code>/<code>send_file</code>, Jinja integration, JSON, test client, class-based views</td>
+</tr>
+</tbody>
+</table>
+<h2>The core abstractions (most connected in the graph)</h2>
+<ol>
+<li><strong><code>Flask</code></strong> (83 connections), <code>app.py</code>. The app object. Inherits from <code>App</code>, which inherits from <code>Scaffold</code>.</li>
+<li><strong><code>App</code></strong> (61), <code>sansio/app.py</code>. Everything about an app that doesn't do I/O.</li>
+<li><strong><code>setupmethod</code></strong> (50), <code>sansio/scaffold.py</code>. A decorator on every registration method. It raises an error if you add routes or hooks after the app has started serving requests.</li>
+<li><strong><code>AppContext</code></strong> (42), <code>ctx.py</code>. Pushed for every request and every CLI command.</li>
+<li><strong><code>Scaffold</code></strong> (37). The shared parent of <code>App</code> and <code>Blueprint</code>, which is why blueprints have the same decorators as apps.</li>
+<li><strong><code>Request</code></strong> (35) and <strong><code>Response</code></strong> (34), <code>wrappers.py</code>.</li>
+<li><strong><code>Blueprint</code></strong> (31). Records its setup calls and replays them when registered on an app.</li>
+</ol>
+<h2>How a request flows through Flask</h2>
+<ol>
+<li>The WSGI server calls <code>Flask.__call__</code>, which calls <code>wsgi_app</code> (<code>app.py:1627</code>). Middleware should wrap <code>app.wsgi_app</code>, not <code>app</code>, so the app object stays reachable.</li>
+<li><code>wsgi_app</code> builds a context with <code>request_context(environ)</code> and pushes it. This makes <code>request</code>, <code>session</code>, <code>g</code> and <code>current_app</code> work.</li>
+<li><code>full_dispatch_request</code> (<code>app.py:1023</code>) sends the <code>request_started</code> signal, then runs <code>preprocess_request</code>, which calls every <code>before_request</code> hook. If a hook returns a value, that becomes the response and the view never runs.</li>
+<li><code>dispatch_request</code> (<code>app.py:993</code>) finds the view function for the matched URL rule and calls it.</li>
+<li>Any exception goes to <code>handle_user_exception</code>, which looks up a registered <code>errorhandler</code>.</li>
+<li><code>finalize_request</code> turns the return value into a <code>Response</code> with <code>make_response</code>, then <code>process_response</code> runs the <code>after_request</code> hooks.</li>
+<li>In a <code>finally</code> block, the context is popped. That runs <code>teardown_request</code> and then <code>teardown_appcontext</code> hooks, even when the request failed.</li>
+</ol>
+<h2>Things that surprise new contributors</h2>
+<ul>
+<li><strong>The "sans-io" split.</strong> <code>src/flask/sansio/</code> holds code with no I/O and no Flask globals, so other implementations such as Quart can reuse it. When you look for a method on <code>Flask</code> and can't find it in <code>app.py</code>, it is in <code>sansio/app.py</code> or <code>sansio/scaffold.py</code>.</li>
+<li><strong>One context, not two.</strong> As of 3.2, <code>RequestContext</code> merged into <code>AppContext</code>. The old name still works but warns, and will be removed in Flask 4.0. Many tutorials still describe two separate contexts.</li>
+<li><strong>Session loads lazily.</strong> Since 3.2 the session is loaded on first access, not when the context is pushed.</li>
+<li><strong>Deprecations in flight.</strong> <code>should_ignore_error</code> is deprecated (removal planned for 3.3), and dispatch methods now take <code>ctx</code> as their first argument; the old signatures go away in 4.0. Subclasses that override these methods need updating.</li>
+<li><strong>Import cycles by design.</strong> The graph finds six 3- and 4-file cycles through <code>flask/__init__.py</code>, for example <code>__init__ -&gt; app -&gt; wrappers -&gt; __init__</code>. They work because of import ordering. Moving imports around in these files can break startup.</li>
+</ul>
+<h2>Where to make common changes</h2>
+<table>
+<thead>
+<tr>
+<th>You want to...</th>
+<th>Start in</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Change how URLs map to views</td>
+<td><code>sansio/scaffold.py</code> (<code>route</code>, <code>add_url_rule</code>) and <code>sansio/app.py</code></td>
+</tr>
+<tr>
+<td>Change request/response hooks</td>
+<td><code>app.py</code>: <code>preprocess_request</code>, <code>process_response</code></td>
+</tr>
+<tr>
+<td>Swap session storage</td>
+<td>Subclass <code>SessionInterface</code> in <code>sessions.py</code>, set <code>app.session_interface</code></td>
+</tr>
+<tr>
+<td>Change error handling</td>
+<td><code>app.py</code>: <code>handle_user_exception</code>, <code>handle_exception</code></td>
+</tr>
+<tr>
+<td>Change the <code>flask</code> command</td>
+<td><code>cli.py</code> (<code>FlaskGroup</code>, <code>ScriptInfo</code>, <code>run_command</code>)</td>
+</tr>
+<tr>
+<td>Change JSON behavior</td>
+<td><code>json/provider.py</code> (<code>DefaultJSONProvider</code>)</td>
+</tr>
+</tbody>
+</table>
+<h2>Suggested first week for a new engineer</h2>
+<ol>
+<li>Day 1: open <code>graph.html</code>, find <code>Flask</code>, and follow its links to <code>App</code> and <code>Scaffold</code>.</li>
+<li>Day 2: step through one request in a debugger using the flow above, starting at <code>wsgi_app</code>.</li>
+<li>Day 3: read <code>ctx.py</code> top to bottom and the <code>globals.py</code> proxies.</li>
+<li>Day 4: read <code>sansio/blueprints.py</code> to see how deferred registration works.</li>
+<li>Day 5: pick a small open issue that touches one of the areas in the map.</li>
+</ol>
+<hr />
+<p>Map built with graphify (Apache-2.0, Graphify Labs). Guide written from the map and the source code.</p></body></html>

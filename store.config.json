@@ -1,0 +1,40 @@
+{
+  "baseUrl": "https://whatnowhater-oss.github.io/store",
+  "contactEmail": "",
+  "products": {
+    "xray": {
+      "name": "Codebase X-ray",
+      "description": "Interactive code map and written architecture and onboarding guide for one repository (up to ~150k lines), delivered within 48 hours.",
+      "amount": 19900,
+      "after": "xray/thanks.html",
+      "repoField": true,
+      "link": "",
+      "sandboxLink": "https://buy.stripe.com/test_aFaaEX0y78Jj7ys7CJ4Ja00"
+    },
+    "guide": {
+      "name": "The Agent-Ready Repo Guide",
+      "description": "A 5-chapter guide to setting up any repo so AI coding agents get it right.",
+      "amount": 1900,
+      "link": "",
+      "sandboxLink": "https://buy.stripe.com/test_cNi5kDa8H4t33icf5b4Ja02",
+      "downloadUrl": ""
+    },
+    "kit": {
+      "name": "Agent-Ready Repo Kit",
+      "description": "Templates for 6 stacks, 8 slash commands and enforced safety hooks for AI coding agents. One person, unlimited repos.",
+      "amount": 4900,
+      "link": "",
+      "sandboxLink": "https://buy.stripe.com/test_aFaaEXbcL1gR8Cwg9f4Ja01",
+      "downloadUrl": ""
+    },
+    "team": {
+      "name": "Agent-Ready Repo Kit: Team license",
+      "description": "The full kit for every engineer at one company, plus a 4-week rollout plan and a review checklist for agent-written PRs.",
+      "amount": 14900,
+      "link": "",
+      "sandboxLink": "https://buy.stripe.com/test_fZu7sL6WvgbLaKE4qx4Ja03",
+      "downloadUrl": ""
+    }
+  },
+  "stripeAccount": "acct_1UWMJjFSTl5nyXfV"
+}

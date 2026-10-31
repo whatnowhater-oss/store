@@ -1,0 +1,258 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Codebase X-ray</title>
+<meta name="description" content="Send us a repo. In 48 hours you get an interactive map of the code and a written architecture and onboarding guide. $199.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a light-box sheet. One narrow reading column, with the hero's code map as the single film-like panel. */
+:root {
+  --bg: #eef2f6;
+  --sheet: #ffffff;
+  --ink: #142233;
+  --muted: #566476;
+  --line: #d3dbe5;
+  --accent: #1f5fd1;
+  --accent-ink: #ffffff;
+  --film: #0f1c2c;
+  --film-line: #3f6fb3;
+  --film-node: #cfe0ff;
+  --film-text: #e6eefb;
+  --display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --body: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, "Cascadia Mono", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0b131d; --sheet: #111c29; --ink: #e3ebf5; --muted: #9aa9bb; --line: #243447;
+    --accent: #6ea0ff; --accent-ink: #0b131d; --film: #070d15; --film-line: #4f82cc; --film-node: #cfe0ff; --film-text: #e6eefb;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0b131d; --sheet: #111c29; --ink: #e3ebf5; --muted: #9aa9bb; --line: #243447;
+  --accent: #6ea0ff; --accent-ink: #0b131d; --film: #070d15; --film-line: #4f82cc; --film-node: #cfe0ff; --film-text: #e6eefb;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--ink);
+  font: 16px/1.6 var(--body);
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.wrap { max-width: 960px; margin: 0 auto; padding-block: 40px 64px; display: grid; gap: 72px; }
+h1, h2, h3 { font-family: var(--display); text-wrap: balance; margin: 0; line-height: 1.1; }
+h1 { font-size: clamp(2.4rem, 6vw, 3.8rem); font-weight: 700; letter-spacing: -0.02em; }
+h2 { font-size: clamp(1.6rem, 3.4vw, 2.2rem); font-weight: 700; }
+h3 { font-size: 1.15rem; font-weight: 500; }
+p { margin: 0; max-width: 65ch; }
+.label { font: 500 0.75rem/1 var(--mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+a { color: var(--accent); }
+a:focus-visible, .btn:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+
+header.top { display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; }
+.brand { font: 700 1.1rem var(--display); }
+.brand span { font: 400 0.8rem var(--mono); color: var(--muted); margin-left: 8px; }
+
+.hero { display: grid; grid-template-columns: 1.05fr 1fr; gap: 40px; align-items: center; }
+.hero > * { min-width: 0; }
+.hero .copy { display: grid; gap: 20px; }
+.lede { font-size: 1.15rem; color: var(--muted); }
+.buy { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+.btn {
+  display: inline-block; background: var(--accent); color: var(--accent-ink); text-decoration: none;
+  font: 600 1rem var(--body); padding: 14px 22px; border-radius: 6px; border: 0; cursor: pointer;
+}
+.btn:hover { filter: brightness(1.08); }
+.price { font: 500 0.95rem var(--mono); color: var(--muted); }
+.price b { font-family: var(--display); font-size: 1.6rem; color: var(--ink); margin-right: 4px; }
+
+.film { background: var(--film); border-radius: 10px; padding: 16px; color: var(--film-text); }
+.film svg { width: 100%; height: auto; display: block; }
+.film figcaption { font: 400 0.78rem/1.5 var(--mono); color: var(--film-node); opacity: 0.8; padding-top: 8px; }
+
+.stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+.stats div { background: var(--sheet); padding: 18px; display: grid; gap: 4px; }
+.stats b { font: 700 1.8rem var(--display); font-variant-numeric: tabular-nums; }
+.stats span { font-size: 0.85rem; color: var(--muted); }
+
+section { display: grid; gap: 24px; }
+.cols { display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; }
+.cols > div { display: grid; gap: 8px; align-content: start; min-width: 0; }
+.cols p { color: var(--muted); }
+
+.steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 0; border-top: 1px solid var(--line); }
+.steps li { display: grid; grid-template-columns: 7rem 1fr; gap: 16px; padding-block: 16px; border-bottom: 1px solid var(--line); }
+.steps .when { font: 500 0.85rem var(--mono); color: var(--accent); padding-top: 2px; }
+.steps li > div { min-width: 0; display: grid; gap: 4px; }
+.steps p { color: var(--muted); }
+
+.sample { background: var(--sheet); border: 1px solid var(--line); border-radius: 10px; padding: 28px; display: grid; gap: 16px; }
+.sample pre { margin: 0; overflow-x: auto; font: 0.85rem/1.6 var(--mono); background: var(--bg); padding: 16px; border-radius: 6px; }
+
+.faq { display: grid; gap: 0; border-top: 1px solid var(--line); }
+.faq details { border-bottom: 1px solid var(--line); padding-block: 14px; }
+.faq summary { cursor: pointer; font-weight: 600; }
+.faq details p { color: var(--muted); padding-top: 8px; }
+
+#order { background: var(--sheet); border: 1px solid var(--line); border-radius: 10px; padding: 28px; }
+#order .note { font: 0.85rem var(--mono); color: var(--muted); }
+footer { font-size: 0.85rem; color: var(--muted); display: grid; gap: 6px; }
+code, .mono { font-family: var(--mono); font-size: 0.92em; }
+
+@media (max-width: 760px) {
+  .hero, .cols { grid-template-columns: 1fr; }
+  .stats { grid-template-columns: repeat(2, 1fr); }
+  .steps li { grid-template-columns: 1fr; gap: 4px; }
+  .wrap { gap: 56px; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .film .edge { stroke-dasharray: 4 6; animation: flow 6s linear infinite; }
+  @keyframes flow { to { stroke-dashoffset: -100; } }
+}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header class="top">
+    <div class="brand">Codebase X-ray <span>maps + guides for real code</span></div>
+    <a href="#order">Order a report</a>
+  </header>
+
+  <div class="hero">
+    <div class="copy">
+      <p class="label">For teams onboarding engineers</p>
+      <h1>See how your codebase actually fits together.</h1>
+      <p class="lede">Send us a repository. Within 48 hours you get a clickable map of every class, function and import, plus a written guide to the architecture, the request flow and the traps new people fall into.</p>
+      <div class="buy">
+        <a class="btn" id="buy-top" href="#order">Order an X-ray</a>
+        <span class="price"><b>$199</b> per repository</span>
+      </div>
+    </div>
+    <figure class="film" style="margin:0">
+      <svg viewBox="0 0 400 300" role="img" aria-label="The most connected parts of the Flask codebase and how they link">
+        <g stroke="var(--film-line)" stroke-width="1.5" fill="none">
+          <line class="edge" x1="200" y1="150" x2="95" y2="70"/>
+          <line class="edge" x1="200" y1="150" x2="310" y2="65"/>
+          <line class="edge" x1="200" y1="150" x2="330" y2="170"/>
+          <line class="edge" x1="200" y1="150" x2="280" y2="250"/>
+          <line class="edge" x1="200" y1="150" x2="120" y2="245"/>
+          <line class="edge" x1="200" y1="150" x2="60" y2="165"/>
+          <line class="edge" x1="95" y1="70" x2="200" y2="35"/>
+          <line class="edge" x1="200" y1="35" x2="310" y2="65"/>
+          <line class="edge" x1="200" y1="35" x2="55" y2="250"/>
+          <line class="edge" x1="330" y1="170" x2="280" y2="250"/>
+        </g>
+        <g fill="var(--film-node)">
+          <circle cx="200" cy="150" r="20"/>
+          <circle cx="95" cy="70" r="14"/>
+          <circle cx="200" cy="35" r="12"/>
+          <circle cx="310" cy="65" r="12"/>
+          <circle cx="330" cy="170" r="10"/>
+          <circle cx="280" cy="250" r="10"/>
+          <circle cx="120" cy="245" r="10"/>
+          <circle cx="60" cy="165" r="9"/>
+          <circle cx="55" cy="250" r="8"/>
+        </g>
+        <g fill="var(--film-text)" font-family="IBM Plex Mono, monospace" font-size="11">
+          <text x="200" y="184" text-anchor="middle">Flask · 83</text>
+          <text x="95" y="100" text-anchor="middle">App · 61</text>
+          <text x="200" y="18" text-anchor="middle">Scaffold · 37</text>
+          <text x="310" y="94" text-anchor="middle">AppContext · 42</text>
+          <text x="330" y="196" text-anchor="middle">Request · 35</text>
+          <text x="280" y="276" text-anchor="middle">Response · 34</text>
+          <text x="120" y="272" text-anchor="middle">Blueprint · 31</text>
+          <text x="60" y="190" text-anchor="middle">Config</text>
+          <text x="55" y="290" text-anchor="middle">setupmethod · 50</text>
+        </g>
+      </svg>
+      <figcaption>Flask's core, from our sample report. Numbers are connections in the graph.</figcaption>
+    </figure>
+  </div>
+
+  <div class="stats" aria-label="What the Flask sample report found">
+    <div><b>891</b><span>code elements mapped</span></div>
+    <div><b>1,815</b><span>links between them</span></div>
+    <div><b>54</b><span>subsystems detected</span></div>
+    <div><b>6</b><span>import cycles flagged</span></div>
+  </div>
+
+  <section>
+    <p class="label">What you get</p>
+    <h2>Three files your team will actually open</h2>
+    <div class="cols">
+      <div><h3>An interactive map</h3><p>A single HTML file. Search any name, click a node to see what it calls and what calls it, and filter by subsystem. Works offline in any browser.</p></div>
+      <div><h3>A written guide</h3><p>The one-minute summary, a map of folders, the core abstractions, how a request or job flows through the code, and where to make common changes.</p></div>
+      <div><h3>A risk list</h3><p>Import cycles, deprecated paths still in use, and the most connected files, where a change ripples furthest. Each link is marked as read from the code or inferred.</p></div>
+    </div>
+  </section>
+
+  <section class="sample">
+    <p class="label">From the Flask sample</p>
+    <h2>A guide written for the person starting Monday</h2>
+    <pre>How a request flows through Flask
+1. The WSGI server calls Flask.__call__, which calls wsgi_app (app.py:1627).
+2. wsgi_app builds a context and pushes it, so request, session, g work.
+3. full_dispatch_request runs every before_request hook. If one returns
+   a value, that becomes the response and the view never runs.
+4. dispatch_request finds the view for the matched URL rule and calls it.
+...</pre>
+    <p>Read the <a href="samples/flask/XRAY_GUIDE.html">full Flask guide</a> or open the <a href="samples/flask/graph.html">interactive Flask map</a>.</p>
+  </section>
+
+  <section>
+    <p class="label">How it works</p>
+    <h2>From checkout to report in two days</h2>
+    <ol class="steps">
+      <li><span class="when">Today</span><div><h3>Pay and tell us which repo</h3><p>Paste a public GitHub link at checkout. For a private repo, share a zip of the code by Google Drive link instead.</p></div></li>
+      <li><span class="when">Hour 0 to 1</span><div><h3>We confirm by email</h3><p>You get a confirmation with your order number and the delivery time.</p></div></li>
+      <li><span class="when">Within 48 h</span><div><h3>Your report arrives</h3><p>The map, the guide and the risk list, as files you keep. Ask up to two follow-up questions by email and we update the guide.</p></div></li>
+      <li><span class="when">Day 7</span><div><h3>We delete your code</h3><p>Your source and our working copies are deleted 7 days after delivery. The report stays yours.</p></div></li>
+    </ol>
+  </section>
+
+  <section>
+    <p class="label">Questions</p>
+    <h2>Before you order</h2>
+    <div class="faq">
+      <details><summary>How is the report made?</summary><p>The map comes from automated parsing of your source code, which reads structure directly and does not guess. The guide is written by an AI model working from that map and the code itself. We tell you this up front because it is why the price is $199 and not a consultant's day rate.</p></details>
+      <details><summary>Which languages work?</summary><p>About 40, including Python, JavaScript, TypeScript, Go, Rust, Java, C#, C, C++, Ruby, PHP and Swift. Mixed-language repos are fine.</p></details>
+      <details><summary>How big a repository?</summary><p>$199 covers up to about 150,000 lines of code. For larger repos or monorepos, email us before ordering for a quote.</p></details>
+      <details><summary>Is my code safe?</summary><p>Your code is used only to make your report and is deleted 7 days after delivery. It is never published, shared, or used to train models.</p></details>
+      <details><summary>What if it isn't useful?</summary><p>Email us within 7 days of delivery and we refund you in full.</p></details>
+    </div>
+  </section>
+
+  <section id="order">
+    <p class="label">Order</p>
+    <h2>One repository, $199</h2>
+    <p>Delivered within 48 hours. Full refund within 7 days if it doesn't help.</p>
+    <div class="buy">
+      <a class="btn" id="buy-bottom" href="#order">Order an X-ray</a>
+    </div>
+    <p class="note" id="order-note" hidden>Checkout opens shortly. Please check back soon.</p>
+  </section>
+
+  <footer>
+    <p>Questions: <a class="mono" id="contact" href="mailto:%%CONTACT_EMAIL%%">%%CONTACT_EMAIL%%</a></p>
+    <p>Maps are built with graphify (Apache-2.0, Graphify Labs). Codebase X-ray is an independent service and is not affiliated with Graphify Labs.</p>
+  </footer>
+</div>
+
+<script>
+  // Set this to the Stripe Payment Link on launch day.
+  const PAY_URL = "%%XRAY_PAY_URL%%";
+  for (const id of ["buy-top", "buy-bottom"]) {
+    const a = document.getElementById(id);
+    if (PAY_URL) { a.href = PAY_URL; a.target = "_blank"; a.rel = "noopener"; }
+    else a.addEventListener("click", () => { document.getElementById("order-note").hidden = false; });
+  }
+</script>
+</body>
+</html>
