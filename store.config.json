@@ -42,8 +42,7 @@
       "name": "Repo Safety Hooks",
       "description": "Three tested git hooks that stop leaked API keys, .env files, huge files, conflict markers and pushes to main.",
       "amount": 1900,
-      "link": "",
-      "heldLink": "https://buy.stripe.com/9B66oH4On6Bb4mgbSZ4Ja04",
+      "link": "https://buy.stripe.com/9B66oH4On6Bb4mgbSZ4Ja04",
       "driveFileId": "1kC8t1sCTr9d-5qtXWgr2qYF0O1ktbiZ3",
       "downloadUrl": "https://drive.google.com/file/d/1kC8t1sCTr9d-5qtXWgr2qYF0O1ktbiZ3/view?usp=sharing"
     }
