@@ -15,6 +15,7 @@ const vars = {
   KIT_PAY_URL: cfg.products.kit.link,
   TEAM_PAY_URL: cfg.products.team.link,
   HOOKS_PAY_URL: cfg.products.hooks.link,
+  CI_PAY_URL: cfg.products.ci.link,
 };
 
 function render(text, extra = {}) {
@@ -26,6 +27,7 @@ function render(text, extra = {}) {
   }
   // Hide the Repo Safety Hooks section until its checkout is switched on.
   if (!cfg.products.hooks || !cfg.products.hooks.link) text = text.replace(/\n  <section id="hooks">[\s\S]*?<\/section>/, '');
+  if (!cfg.products.ci || !cfg.products.ci.link) text = text.replace(/\n  <section id="ci">[\s\S]*?<\/section>/, '');
   return text.replace(/%%([A-Z_]+)%%/g, (m, k) => (k in all ? all[k] : m));
 }
 

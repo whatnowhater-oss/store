@@ -45,6 +45,15 @@
       "link": "https://buy.stripe.com/9B66oH4On6Bb4mgbSZ4Ja04",
       "driveFileId": "1kC8t1sCTr9d-5qtXWgr2qYF0O1ktbiZ3",
       "downloadUrl": "https://drive.google.com/file/d/1kC8t1sCTr9d-5qtXWgr2qYF0O1ktbiZ3/view?usp=sharing"
+    },
+    "ci": {
+      "name": "CI Workflow Pack",
+      "description": "Ready-to-use GitHub Actions workflows for Node, Python, Django, Go and Rails, plus a security workflow.",
+      "amount": 1900,
+      "link": "",
+      "heldLink": "https://buy.stripe.com/00wbJ15Sr2kV060aOV4Ja05",
+      "driveFileId": "1zhzw1N0uTBBEXmBE51MmOVBtdeMZLYPp",
+      "downloadUrl": "https://drive.google.com/file/d/1zhzw1N0uTBBEXmBE51MmOVBtdeMZLYPp/view?usp=sharing"
     }
   },
   "stripeAccount": "acct_1UWMJjFSTl5nyXfV"
