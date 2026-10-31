@@ -15,31 +15,28 @@
       "name": "The Agent-Ready Repo Guide",
       "description": "A 5-chapter guide to setting up any repo so AI coding agents get it right.",
       "amount": 1900,
-      "link": "",
+      "link": "https://buy.stripe.com/cNi5kDa8H4t33icf5b4Ja02",
       "sandboxLink": "https://buy.stripe.com/test_cNi5kDa8H4t33icf5b4Ja02",
       "downloadUrl": "https://drive.google.com/file/d/1QEc5lCXDgMM-6V4OvDl8FjUmP31XcieP/view?usp=sharing",
-      "driveFileId": "1QEc5lCXDgMM-6V4OvDl8FjUmP31XcieP",
-      "heldLink": "https://buy.stripe.com/cNi5kDa8H4t33icf5b4Ja02"
+      "driveFileId": "1QEc5lCXDgMM-6V4OvDl8FjUmP31XcieP"
     },
     "kit": {
       "name": "Agent-Ready Repo Kit",
       "description": "Templates for 6 stacks, 8 slash commands and enforced safety hooks for AI coding agents. One person, unlimited repos.",
       "amount": 4900,
-      "link": "",
+      "link": "https://buy.stripe.com/aFaaEXbcL1gR8Cwg9f4Ja01",
       "sandboxLink": "https://buy.stripe.com/test_aFaaEXbcL1gR8Cwg9f4Ja01",
       "downloadUrl": "https://drive.google.com/file/d/1sVEpcZhFLWuZtJ93sZ_29I5-PueAVHEX/view?usp=sharing",
-      "driveFileId": "1sVEpcZhFLWuZtJ93sZ_29I5-PueAVHEX",
-      "heldLink": "https://buy.stripe.com/aFaaEXbcL1gR8Cwg9f4Ja01"
+      "driveFileId": "1sVEpcZhFLWuZtJ93sZ_29I5-PueAVHEX"
     },
     "team": {
       "name": "Agent-Ready Repo Kit: Team license",
       "description": "The full kit for every engineer at one company, plus a 4-week rollout plan and a review checklist for agent-written PRs.",
       "amount": 14900,
-      "link": "",
+      "link": "https://buy.stripe.com/fZu7sL6WvgbLaKE4qx4Ja03",
       "sandboxLink": "https://buy.stripe.com/test_fZu7sL6WvgbLaKE4qx4Ja03",
       "downloadUrl": "https://drive.google.com/file/d/1FU4a_rFBR2fHUvuvhGYsh6D4skzXaN5P/view?usp=sharing",
-      "driveFileId": "1FU4a_rFBR2fHUvuvhGYsh6D4skzXaN5P",
-      "heldLink": "https://buy.stripe.com/fZu7sL6WvgbLaKE4qx4Ja03"
+      "driveFileId": "1FU4a_rFBR2fHUvuvhGYsh6D4skzXaN5P"
     }
   },
   "stripeAccount": "acct_1UWMJjFSTl5nyXfV"
