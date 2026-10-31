@@ -17,9 +17,9 @@
       "amount": 1900,
       "link": "",
       "sandboxLink": "https://buy.stripe.com/test_cNi5kDa8H4t33icf5b4Ja02",
-      "downloadUrl": "",
-      "pendingLink": "https://buy.stripe.com/cNi5kDa8H4t33icf5b4Ja02",
-      "driveFileId": "1QEc5lCXDgMM-6V4OvDl8FjUmP31XcieP"
+      "downloadUrl": "https://drive.google.com/file/d/1QEc5lCXDgMM-6V4OvDl8FjUmP31XcieP/view?usp=sharing",
+      "driveFileId": "1QEc5lCXDgMM-6V4OvDl8FjUmP31XcieP",
+      "heldLink": "https://buy.stripe.com/cNi5kDa8H4t33icf5b4Ja02"
     },
     "kit": {
       "name": "Agent-Ready Repo Kit",
@@ -27,9 +27,9 @@
       "amount": 4900,
       "link": "",
       "sandboxLink": "https://buy.stripe.com/test_aFaaEXbcL1gR8Cwg9f4Ja01",
-      "downloadUrl": "",
-      "pendingLink": "https://buy.stripe.com/aFaaEXbcL1gR8Cwg9f4Ja01",
-      "driveFileId": "1sVEpcZhFLWuZtJ93sZ_29I5-PueAVHEX"
+      "downloadUrl": "https://drive.google.com/file/d/1sVEpcZhFLWuZtJ93sZ_29I5-PueAVHEX/view?usp=sharing",
+      "driveFileId": "1sVEpcZhFLWuZtJ93sZ_29I5-PueAVHEX",
+      "heldLink": "https://buy.stripe.com/aFaaEXbcL1gR8Cwg9f4Ja01"
     },
     "team": {
       "name": "Agent-Ready Repo Kit: Team license",
@@ -37,8 +37,9 @@
       "amount": 14900,
       "link": "",
       "sandboxLink": "https://buy.stripe.com/test_fZu7sL6WvgbLaKE4qx4Ja03",
-      "downloadUrl": "",
-      "driveFileId": "1FU4a_rFBR2fHUvuvhGYsh6D4skzXaN5P"
+      "downloadUrl": "https://drive.google.com/file/d/1FU4a_rFBR2fHUvuvhGYsh6D4skzXaN5P/view?usp=sharing",
+      "driveFileId": "1FU4a_rFBR2fHUvuvhGYsh6D4skzXaN5P",
+      "heldLink": "https://buy.stripe.com/fZu7sL6WvgbLaKE4qx4Ja03"
     }
   },
   "stripeAccount": "acct_1UWMJjFSTl5nyXfV"

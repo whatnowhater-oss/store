@@ -189,7 +189,7 @@ code, .mono { font-family: var(--mono); font-size: 0.92em; }
     <p class="label">What you get</p>
     <h2>Three files your team will actually open</h2>
     <div class="cols">
-      <div><h3>An interactive map</h3><p>A single HTML file. Search any name, click a node to see what it calls and what calls it, and filter by subsystem. Works offline in any browser.</p></div>
+      <div><h3>An interactive map</h3><p>A single HTML file. Search any name, click a node to see what it calls and what calls it, and filter by subsystem. Opens in any modern browser.</p></div>
       <div><h3>A written guide</h3><p>The one-minute summary, a map of folders, the core abstractions, how a request or job flows through the code, and where to make common changes.</p></div>
       <div><h3>A risk list</h3><p>Import cycles, deprecated paths still in use, and the most connected files, where a change ripples furthest. Each link is marked as read from the code or inferred.</p></div>
     </div>
@@ -245,7 +245,6 @@ code, .mono { font-family: var(--mono); font-size: 0.92em; }
     <div class="buy">
       <a class="btn" id="buy-bottom" href="#order">Order an X-ray</a>
     </div>
-    <p class="note" id="order-note" hidden>Checkout opens shortly. Please check back soon.</p>
   </section>
 
   <footer>
@@ -260,7 +259,6 @@ code, .mono { font-family: var(--mono); font-size: 0.92em; }
   for (const id of ["buy-top", "buy-bottom"]) {
     const a = document.getElementById(id);
     if (PAY_URL) { a.href = PAY_URL; a.target = "_blank"; a.rel = "noopener"; }
-    else a.addEventListener("click", () => { document.getElementById("order-note").hidden = false; });
   }
 </script>
 </body>
