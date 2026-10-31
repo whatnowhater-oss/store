@@ -1,0 +1,124 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Express X-ray guide</title>
+<style>:root{--bg:#fff;--fg:#142233;--muted:#566476;--line:#d3dbe5;--code:#eef2f6;--link:#1f5fd1}
+@media (prefers-color-scheme:dark){:root{--bg:#111c29;--fg:#e3ebf5;--muted:#9aa9bb;--line:#243447;--code:#0b131d;--link:#6ea0ff;color-scheme:dark}}
+body{background:var(--bg);color:var(--fg);font:16px/1.6 "IBM Plex Sans",system-ui,sans-serif;max-width:760px;margin:0 auto;padding:32px max(16px,env(safe-area-inset-left,0px))}
+table{border-collapse:collapse;display:block;overflow-x:auto}td,th{border:1px solid var(--line);padding:6px 10px;text-align:left;vertical-align:top}
+code{background:var(--code);padding:1px 4px;border-radius:3px;font-size:.9em}a{color:var(--link)}</style></head><body>
+<p><a href="../../index.html">&larr; Codebase X-ray</a> &middot; <a href="graph.html">Open the interactive map</a></p>
+<h1>Codebase X-ray: Express</h1>
+<p>Sample report. Source: <a href="https://github.com/expressjs/express">expressjs/express</a> at commit <code>1c6f1b0</code> (version 5.3.0), mapped 2026-10-31.
+Files in this pack: <code>graph.html</code> (open in a browser, click any node), <code>GRAPH_REPORT.md</code> (raw graph stats), and this guide.</p>
+<h2>The one-minute version</h2>
+<p>Express 5 is much smaller than most people expect: about 2,800 lines in 6 files under <code>lib/</code>. Most of the work is done by 28 small dependencies. Routing lives in the separate <code>router</code> package, body parsing in <code>body-parser</code>, file serving in <code>send</code> and <code>serve-static</code>, and the final error page in <code>finalhandler</code>. Express itself is the glue: an app function, and the <code>req</code> and <code>res</code> objects with their helper methods. Read <code>express.js</code>, then <code>application.js</code>, then skim <code>response.js</code>.</p>
+<h2>Map of the code</h2>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Lines</th>
+<th>What lives there</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>lib/express.js</code></td>
+<td>81</td>
+<td><code>createApplication()</code>: builds the app function and re-exports <code>Router</code>, <code>json</code>, <code>static</code> and friends</td>
+</tr>
+<tr>
+<td><code>lib/application.js</code></td>
+<td>631</td>
+<td>The app: settings, <code>use</code>, <code>route</code>, the HTTP verb methods, <code>render</code>, <code>listen</code>, and <code>handle</code></td>
+</tr>
+<tr>
+<td><code>lib/response.js</code></td>
+<td>1,050</td>
+<td>Everything on <code>res</code>: <code>send</code>, <code>json</code>, <code>status</code>, <code>sendFile</code>, <code>download</code>, <code>cookie</code>, <code>redirect</code>, <code>render</code></td>
+</tr>
+<tr>
+<td><code>lib/request.js</code></td>
+<td>527</td>
+<td>Everything on <code>req</code>: <code>get</code>, <code>accepts</code>, <code>is</code>, and getters like <code>query</code>, <code>ip</code>, <code>path</code>, <code>hostname</code>, <code>fresh</code></td>
+</tr>
+<tr>
+<td><code>lib/view.js</code></td>
+<td>205</td>
+<td>Finds and renders template files</td>
+</tr>
+<tr>
+<td><code>lib/utils.js</code></td>
+<td>271</td>
+<td>ETag, query parser and trust proxy setup, content-type helpers</td>
+</tr>
+</tbody>
+</table>
+<h2>The core abstractions (most connected in the graph)</h2>
+<ol>
+<li><strong><code>res</code></strong> (19 connections), <code>response.js</code>. The response prototype. Every <code>res.*</code> helper is defined on it.</li>
+<li><strong><code>app</code></strong> (17), <code>application.js</code>. The application prototype, mixed into each app function.</li>
+<li><strong><code>sendfile()</code></strong> (9), <code>response.js:924</code>. The shared engine behind <code>res.sendFile</code> and <code>res.download</code>.</li>
+<li><strong><code>req</code></strong> (7), <code>request.js</code>. The request prototype.</li>
+<li><strong><code>View</code></strong> (4), <code>view.js</code>. Template lookup and rendering.</li>
+</ol>
+<p>The graph has no import cycles and no links across files that the code doesn't state outright. That is typical of a small, flat library and makes Express safe to change one file at a time.</p>
+<h2>How a request flows through Express</h2>
+<ol>
+<li><code>express()</code> returns a plain function <code>app(req, res, next)</code> that calls <code>app.handle</code> (<code>express.js</code>). That is why an app can be passed straight to <code>http.createServer</code> or mounted inside another app.</li>
+<li><code>app.handle</code> (<code>application.js:152</code>) creates the final handler with <code>finalhandler</code>, sets <code>X-Powered-By</code> if enabled, links <code>req.res</code> and <code>res.req</code>, and creates <code>res.locals</code>.</li>
+<li>It swaps the prototypes of Node's request and response objects to <code>app.request</code> and <code>app.response</code> with <code>Object.setPrototypeOf</code>. That single step is what gives <code>req</code> and <code>res</code> all the Express helpers.</li>
+<li>It calls <code>this.router.handle(...)</code>. The router comes from the <code>router</code> package and is created lazily the first time <code>app.router</code> is read (<code>application.js:69</code>).</li>
+<li>The router runs matching middleware and routes in the order they were added. Anything unhandled, including errors passed to <code>next(err)</code>, ends at <code>finalhandler</code>, which sends the 404 or error page.</li>
+</ol>
+<h2>Things that surprise new contributors</h2>
+<ul>
+<li><strong>Routing isn't in this repo.</strong> <code>app.get</code>, <code>app.use</code> and <code>app.route</code> mostly forward to the <code>router</code> package. Bugs about path matching usually belong there.</li>
+<li><strong>Prototype swapping.</strong> <code>req</code> and <code>res</code> are Node's own objects with their prototypes replaced. A mounted sub-app swaps them again and restores the parent's prototypes when it calls <code>next</code> (<code>application.js</code>, in <code>app.use</code>).</li>
+<li><strong>Query parsing is "simple" by default.</strong> In Express 5, <code>req.query</code> uses Node's simple parser, so nested objects like <code>a[b]=1</code> are not expanded unless you set <code>query parser</code> to <code>extended</code>.</li>
+<li><strong>Settings are inherited.</strong> A mounted sub-app inherits the parent's settings through its <code>mount</code> event, unless it set them itself.</li>
+<li><strong>Defaults worth knowing.</strong> <code>x-powered-by</code> is on, ETags are weak, and <code>trust proxy</code> is off, so <code>req.ip</code> is the direct peer until you change it.</li>
+</ul>
+<h2>Where to make common changes</h2>
+<table>
+<thead>
+<tr>
+<th>You want to...</th>
+<th>Start in</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Change a <code>res</code> helper (send, json, redirect, cookie)</td>
+<td><code>lib/response.js</code></td>
+</tr>
+<tr>
+<td>Change a <code>req</code> helper or getter</td>
+<td><code>lib/request.js</code></td>
+</tr>
+<tr>
+<td>Change app settings or defaults</td>
+<td><code>lib/application.js</code>: <code>defaultConfiguration</code></td>
+</tr>
+<tr>
+<td>Change template rendering</td>
+<td><code>lib/view.js</code>, <code>app.render</code>, <code>res.render</code></td>
+</tr>
+<tr>
+<td>Change ETag or query parser options</td>
+<td><code>lib/utils.js</code></td>
+</tr>
+<tr>
+<td>Change route matching</td>
+<td>the <code>router</code> package, not this repo</td>
+</tr>
+</tbody>
+</table>
+<h2>Suggested first week for a new engineer</h2>
+<ol>
+<li>Day 1: open <code>graph.html</code> and look at how few nodes there are, then read <code>lib/express.js</code> end to end.</li>
+<li>Day 2: read <code>app.handle</code> and <code>app.use</code> and trace one request with the flow above.</li>
+<li>Day 3: read <code>res.send</code> and <code>res.json</code> in <code>response.js</code>, the most used code in the library.</li>
+<li>Day 4: read the <code>router</code> package's <code>handle</code> function to see the other half of the flow.</li>
+<li>Day 5: pick a small open issue about a <code>req</code> or <code>res</code> helper.</li>
+</ol>
+<hr />
+<p>Map built with graphify (Apache-2.0, Graphify Labs). Guide written from the map and the source code.</p></body></html>

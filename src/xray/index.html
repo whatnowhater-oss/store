@@ -115,6 +115,8 @@ code, .mono { font-family: var(--mono); font-size: 0.92em; }
   .film .edge { stroke-dasharray: 4 6; animation: flow 6s linear infinite; }
   @keyframes flow { to { stroke-dashoffset: -100; } }
 }
+.more ul { margin: 0; padding-left: 1.2em; display: grid; gap: 4px; }
+.more { display: grid; gap: 8px; }
 </style>
 </head>
 <body>
@@ -204,6 +206,13 @@ code, .mono { font-family: var(--mono); font-size: 0.92em; }
 4. dispatch_request finds the view for the matched URL rule and calls it.
 ...</pre>
     <p>Read the <a href="samples/flask/XRAY_GUIDE.html">full Flask guide</a> or open the <a href="samples/flask/graph.html">interactive Flask map</a>.</p>
+    <div class="more">
+      <p class="label">More samples</p>
+      <ul>
+        <li><b>Express</b> (JavaScript): <a href="samples/express/XRAY_GUIDE.html">guide</a> · <a href="samples/express/graph.html">map</a></li>
+        <li><b>chi</b> (Go): <a href="samples/chi/XRAY_GUIDE.html">guide</a> · <a href="samples/chi/graph.html">map</a></li>
+      </ul>
+    </div>
   </section>
 
   <section>

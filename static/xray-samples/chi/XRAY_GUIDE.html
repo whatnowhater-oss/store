@@ -1,0 +1,133 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>chi X-ray guide</title>
+<style>:root{--bg:#fff;--fg:#142233;--muted:#566476;--line:#d3dbe5;--code:#eef2f6;--link:#1f5fd1}
+@media (prefers-color-scheme:dark){:root{--bg:#111c29;--fg:#e3ebf5;--muted:#9aa9bb;--line:#243447;--code:#0b131d;--link:#6ea0ff;color-scheme:dark}}
+body{background:var(--bg);color:var(--fg);font:16px/1.6 "IBM Plex Sans",system-ui,sans-serif;max-width:760px;margin:0 auto;padding:32px max(16px,env(safe-area-inset-left,0px))}
+table{border-collapse:collapse;display:block;overflow-x:auto}td,th{border:1px solid var(--line);padding:6px 10px;text-align:left;vertical-align:top}
+code{background:var(--code);padding:1px 4px;border-radius:3px;font-size:.9em}a{color:var(--link)}</style></head><body>
+<p><a href="../../index.html">&larr; Codebase X-ray</a> &middot; <a href="graph.html">Open the interactive map</a></p>
+<h1>Codebase X-ray: chi</h1>
+<p>Sample report. Source: <a href="https://github.com/go-chi/chi">go-chi/chi</a> at commit <code>9f8adb1</code> (Go 1.24 module), mapped 2026-10-31. Tests and <code>_examples/</code> were left out of the map.
+Files in this pack: <code>graph.html</code> (open in a browser, click any node), <code>GRAPH_REPORT.md</code> (raw graph stats), and this guide.</p>
+<h2>The one-minute version</h2>
+<p>chi is a small HTTP router for Go: about 1,850 lines of core code in 5 files, plus 31 optional middleware files (about 2,700 lines) that you can ignore until you need one. Everything is built on the standard library's <code>http.Handler</code>, so there is no custom request type to learn. The core is a <code>Mux</code> that holds a middleware stack and a radix tree of routes, and a <code>Context</code> that carries URL parameters through each request. Read <code>chi.go</code>, <code>mux.go</code>, <code>context.go</code>, then <code>tree.go</code>.</p>
+<h2>Map of the code</h2>
+<table>
+<thead>
+<tr>
+<th>Area</th>
+<th>Files</th>
+<th>Lines</th>
+<th>What lives there</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Public interface</td>
+<td><code>chi.go</code></td>
+<td>140</td>
+<td><code>NewRouter</code>, the <code>Router</code> and <code>Routes</code> interfaces, <code>Middlewares</code></td>
+</tr>
+<tr>
+<td>Router</td>
+<td><code>mux.go</code></td>
+<td>540</td>
+<td><code>Mux</code>: registering routes, <code>Use</code>, <code>With</code>, <code>Group</code>, <code>Route</code>, <code>Mount</code>, and request dispatch</td>
+</tr>
+<tr>
+<td>Route tree</td>
+<td><code>tree.go</code></td>
+<td>925</td>
+<td>The radix tree: inserting routes, matching paths, URL parameters, regexp segments</td>
+</tr>
+<tr>
+<td>Request context</td>
+<td><code>context.go</code></td>
+<td>190</td>
+<td><code>Context</code>, <code>URLParam</code>, <code>RoutePattern</code></td>
+</tr>
+<tr>
+<td>Chaining</td>
+<td><code>chain.go</code></td>
+<td>49</td>
+<td>Wraps handlers in middleware</td>
+</tr>
+<tr>
+<td>Middleware</td>
+<td><code>middleware/</code> (31 files)</td>
+<td>2,700</td>
+<td>Logger, Recoverer, RequestID, Timeout, Throttle, Compress, RealIP and more</td>
+</tr>
+</tbody>
+</table>
+<h2>The core abstractions (most connected in the graph)</h2>
+<ol>
+<li><strong><code>Mux</code></strong> (40 connections), <code>mux.go:21</code>. The router. Holds the middleware stack, the route tree, a <code>sync.Pool</code> of contexts, and a link to its parent when mounted.</li>
+<li><strong><code>Context</code></strong> (30), <code>context.go:45</code>. Per-request routing state: the URL parameters, the matched pattern and the remaining path for sub-routers.</li>
+<li><strong><code>Router</code></strong> (27), <code>chi.go:68</code>. The interface <code>Mux</code> implements. Program against this.</li>
+<li><strong><code>node</code></strong> (21), <code>tree.go:97</code>. One node of the radix tree. Four kinds: static (<code>/home</code>), regexp (<code>/{id:[0-9]+}</code>), parameter (<code>/{user}</code>) and catch-all (<code>/api/*</code>).</li>
+<li><strong><code>basicWriter</code></strong> (17), <code>middleware/wrap_writer.go</code>. Wraps <code>http.ResponseWriter</code> so middleware can see the status code and bytes written.</li>
+</ol>
+<h2>How a request flows through chi</h2>
+<ol>
+<li>Go's HTTP server calls <code>Mux.ServeHTTP</code> (<code>mux.go:63</code>).</li>
+<li>If no route was ever registered, it answers 404 straight away.</li>
+<li>If a parent router already put a <code>Context</code> on the request, it reuses it. Otherwise it takes one from the pool, resets it and attaches it to the request.</li>
+<li>It calls <code>mx.handler</code>, which is the middleware stack wrapped around <code>routeHTTP</code>. Middleware therefore runs before route matching, so it can't know which route will match.</li>
+<li><code>routeHTTP</code> (<code>mux.go:455</code>) picks the path (<code>RawPath</code> if set), maps the method, and calls <code>tree.FindRoute</code> (<code>tree.go:383</code>).</li>
+<li>On a match it copies URL parameters into the standard <code>r.SetPathValue</code>, sets <code>r.Pattern</code>, and calls the handler. With no match it answers 405 if the path exists for another method, otherwise 404.</li>
+<li>When the handler returns, the <code>Context</code> goes back into the pool.</li>
+</ol>
+<h2>Things that surprise new contributors</h2>
+<ul>
+<li><strong>Middleware order is enforced.</strong> <code>Use</code> panics if called after the first route is added (<code>mux.go:100</code>), because the handler chain is built once at that moment.</li>
+<li><strong>Middleware runs before matching.</strong> To act on the matched route, use <code>With</code> or <code>Group</code> to add middleware to specific routes, or read <code>RoutePattern()</code> after calling <code>next</code>.</li>
+<li><strong>Contexts are pooled.</strong> Don't keep a <code>*chi.Context</code> after the request ends; it will be reset and reused by another request.</li>
+<li><strong>Mount rewrites the path.</strong> A mounted sub-router sees only the rest of the path after the mount point (<code>nextRoutePath</code>). <code>Mount</code> panics if the path is already taken or if you mount a router onto itself.</li>
+<li><strong>Standard library interop.</strong> URL parameters are also set as <code>r.PathValue(...)</code>, so code written for Go 1.22+ routing patterns can read them. <code>Handle("GET /x", h)</code> also works because chi splits on the first space.</li>
+<li><strong>The QUERY method.</strong> chi registers the newer HTTP QUERY method alongside the usual ones (<code>tree.go:37</code>).</li>
+</ul>
+<h2>Where to make common changes</h2>
+<table>
+<thead>
+<tr>
+<th>You want to...</th>
+<th>Start in</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Change how paths match or add a pattern type</td>
+<td><code>tree.go</code>: <code>InsertRoute</code>, <code>findRoute</code>, <code>patNextSegment</code></td>
+</tr>
+<tr>
+<td>Change 404/405 behaviour</td>
+<td><code>mux.go</code>: <code>NotFound</code>, <code>MethodNotAllowed</code>, <code>routeHTTP</code></td>
+</tr>
+<tr>
+<td>Change sub-router mounting</td>
+<td><code>mux.go</code>: <code>Mount</code>, <code>nextRoutePath</code></td>
+</tr>
+<tr>
+<td>Read URL parameters differently</td>
+<td><code>context.go</code>: <code>URLParam</code>, <code>RouteParams</code></td>
+</tr>
+<tr>
+<td>Add or fix a middleware</td>
+<td><code>middleware/</code> (each file stands alone)</td>
+</tr>
+<tr>
+<td>List every route for docs</td>
+<td><code>tree.go</code>: <code>Walk</code></td>
+</tr>
+</tbody>
+</table>
+<h2>Suggested first week for a new engineer</h2>
+<ol>
+<li>Day 1: open <code>graph.html</code>, find <code>Mux</code>, and follow its links to <code>node</code> and <code>Context</code>.</li>
+<li>Day 2: step through one request from <code>ServeHTTP</code> to your handler with the flow above.</li>
+<li>Day 3: read <code>tree.go</code> with a few patterns in mind, such as <code>/users/{id}</code> and <code>/files/*</code>.</li>
+<li>Day 4: read <code>Mount</code>, <code>Route</code> and <code>Group</code>, then build a small nested router to watch the path rewrite.</li>
+<li>Day 5: read two middleware files, <code>logger.go</code> and <code>recoverer.go</code>, then pick a small open issue.</li>
+</ol>
+<hr />
+<p>Map built with graphify (Apache-2.0, Graphify Labs). Guide written from the map and the source code.</p></body></html>
